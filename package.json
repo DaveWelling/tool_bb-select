@@ -1,0 +1,15 @@
+{
+  "name": "bbselect",
+  "version": "1.0.0",
+  "description": "Get bb project open fast",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.14.1",
+    "inquirer": "^5.1.0"
+  }
+}
