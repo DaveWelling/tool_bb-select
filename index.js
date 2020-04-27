@@ -4,10 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
+const gitUrl = 'https://sstdev.visualstudio.com/DefaultCollection/Backbone/_git/';
 const vsCodeExePath = 'C:/Program Files/Microsoft VS Code/code';
 const conEmuDirectory = 'C:/Program Files/ConEmu';
 const conEmuExe = 'ConEmu64.exe';
 const bbDirectory = 'C:/code/strategic/backbone';
+
 const siloPath = bbDirectory+'/silos';
 const libraryPath = bbDirectory+'/Libraries';
 const devicesPath = bbDirectory+'/devices';
@@ -16,6 +18,12 @@ const toolsPath = bbDirectory+'/tools';
 const useCasePath = bbDirectory+'/useCase';
 
 const commandAvailable = [
+    {
+        name: 'silo',
+        short: 'c',
+        description: 'Clone',
+        path: bbDirectory
+    },
     {
         name: 'silo',
         short: 's',
@@ -81,6 +89,9 @@ program
             console.error(cmd, ' is not a valid command');
         }
 
+        if (commandToRun.short === 'c') {
+            return clone(selector);
+        }
         if (commandToRun.short === 'kp') {
             return killProcess(selector);
         }
@@ -106,6 +117,30 @@ program
     .parse(process.argv);
 
 
+function clone(selector) {
+    let [type] = selector.split('_');
+    let subPath = {
+        'silo': 'silos',
+        'lib': 'libraries',
+        'device': 'devices',
+        'infra': 'infra',
+        'tool': 'tools',
+        'uc': 'useCase'
+    }[type];
+    let shortCmd = {
+        'silo': 's',
+        'lib': 'l',
+        'device': 'd',
+        'infra': 'i',
+        'tool': 't',
+        'uc': 'u'
+    }[type];
+    const absolutePath = path.join(bbDirectory, subPath);
+    const url = gitUrl+selector;
+    return spawn('git', ['clone', url], absolutePath).then(()=>{
+        return openThing({ path: absolutePath}, selector);
+    });
+}
 
 function openThing(thing, selectedSubDirectory, openBash) {
     let thingPath = path.join(thing.path, selectedSubDirectory);
