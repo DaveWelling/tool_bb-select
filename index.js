@@ -5,7 +5,8 @@ const path = require('path');
 const os = require('os');
 
 const gitUrl = 'https://sstdev.visualstudio.com/DefaultCollection/Backbone/_git/';
-const vsCodeExePath = 'C:/Program Files/Microsoft VS Code/code';
+//const vsCodeExePath = 'C:/Program Files/Microsoft VS Code/code';
+const vsCodeExePath = path.join(os.homedir(), '/AppData/Local/Programs/Microsoft VS Code/Code.exe');
 const conEmuDirectory = 'C:/Program Files/ConEmu';
 const conEmuExe = 'ConEmu64.exe';
 const bbDirectory = 'C:/code/strategic/backbone';
@@ -16,10 +17,11 @@ const devicesPath = bbDirectory+'/devices';
 const infraPath = bbDirectory+'/infra';
 const toolsPath = bbDirectory+'/tools';
 const useCasePath = bbDirectory+'/useCase';
+const siloPackagePath = bbDirectory+'/silos/silo_ui/packages';
 
 const commandAvailable = [
     {
-        name: 'silo',
+        name: 'clone',
         short: 'c',
         description: 'Clone',
         path: bbDirectory
@@ -29,6 +31,12 @@ const commandAvailable = [
         short: 's',
         description: 'Open a silo.',
         path: siloPath
+    },
+    {
+        name: 'siloPackage',
+        short: 'sp',
+        description: 'Open a silo package.',
+        path: siloPackagePath
     },
     {
         name: 'useCase',
