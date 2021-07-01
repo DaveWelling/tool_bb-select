@@ -18,6 +18,7 @@ const infraPath = bbDirectory + '/infra';
 const toolsPath = bbDirectory + '/tools';
 const useCasePath = bbDirectory + '/useCase';
 const siloPackagePath = bbDirectory + '/silos/silo_ui/packages';
+const experimentalUiPath = bbDirectory + '/silos/silo_ui/backbone20';
 
 const commandAvailable = [
     {
@@ -37,6 +38,12 @@ const commandAvailable = [
         short: 'sp',
         description: 'Open a silo package.',
         path: siloPackagePath
+    },
+    {
+        name: 'experimentalUi',
+        short: 'x',
+        description: 'Open experimental UI.',
+        path: experimentalUiPath
     },
     {
         name: 'useCase',
@@ -102,14 +109,18 @@ program
         if (commandToRun.short === 'kp') {
             return killProcess(selector);
         }
+        if (commandToRun.short === 'x') {
+            return openExperimentalUi(commandToRun, selector);
+        }
 
         let dirs = getSubDirectories(commandToRun.path);
         let selectedSubdirectories = dirs.filter(d => d.includes(selector));
         const openBash = !!program.bash;
+        const openVsCode = !!program.vscode;
         if (selectedSubdirectories.length === 0) {
             console.log(selector, ' not found.');
         } else if (selectedSubdirectories.length === 1) {
-            return openThing(commandToRun, selectedSubdirectories[0], openBash);
+            return openThing(commandToRun, selectedSubdirectories[0], openVsCode, openBash);
         } else {
             inquirer
                 .prompt([
@@ -121,11 +132,18 @@ program
                     }
                 ])
                 .then(answers => {
-                    return openThing(commandToRun, answers.whichThing, openBash);
+                    return openThing(commandToRun, answers.whichThing, openVsCode, openBash);
                 });
         }
     })
     .parse(process.argv);
+
+function openExperimentalUi(commandToRun, selector) {
+    openThing(commandToRun, '', true);
+    openThing(commandToRun, 'silo_ui-web');
+    openThing(commandToRun, 'silo_ui-native');
+    openThing(commandToRun, 'silo_ui-native');
+}
 
 function clone(selector) {
     let [type] = selector.split('_');
@@ -152,9 +170,9 @@ function clone(selector) {
     });
 }
 
-function openThing(thing, selectedSubDirectory, openBash) {
+function openThing(thing, selectedSubDirectory, openVsCode, openBash) {
     let thingPath = path.join(thing.path, selectedSubDirectory);
-    if (program.vscode) {
+    if (openVsCode) {
         return spawn(vsCodeExePath, ['.'], thingPath).then(() => {
             return conEmu(thingPath, openBash);
         });
